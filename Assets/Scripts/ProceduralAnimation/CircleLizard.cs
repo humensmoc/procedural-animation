@@ -101,7 +101,8 @@ public class CircleLizard : MonoBehaviour
 
     
 
-    private GameObject segmentPrefab;
+    private GameObject footSegmentPrefab;
+    private GameObject bodySegmentPrefab;
     private GameObject linePrefab;
 
     void Start()
@@ -122,11 +123,21 @@ public class CircleLizard : MonoBehaviour
         // 清理所有现有对象
         // CleanupAll();
 
-        // 加载圆形Prefab
-        if (segmentPrefab == null)
+        // 加载footPrefab
+        if (footSegmentPrefab == null)
         {
-            segmentPrefab = Resources.Load<GameObject>("FluidThing/CircleSegment");
-            if (segmentPrefab == null)
+            footSegmentPrefab = Resources.Load<GameObject>("FluidThing/CircleSegment");
+            if (footSegmentPrefab == null)
+            {
+                Debug.LogError("找不到CircleSegment预制体！请确保它在Resources/FluidThing/目录下");
+                return;
+            }
+        }
+        // 加载bodyPrefab
+        if (bodySegmentPrefab == null)
+        {
+            bodySegmentPrefab = Resources.Load<GameObject>("FluidThing/LizardBodySegment");
+            if (bodySegmentPrefab == null)
             {
                 Debug.LogError("找不到CircleSegment预制体！请确保它在Resources/FluidThing/目录下");
                 return;
@@ -236,7 +247,7 @@ public class CircleLizard : MonoBehaviour
             CreateFootSegment(legChain.joints, segments, legEndSize, legColorGradient);
 
             // 创建关节
-            GameObject jointObj = Instantiate(segmentPrefab, Vector3.zero, Quaternion.identity, transform);
+            GameObject jointObj = Instantiate(footSegmentPrefab, Vector3.zero, Quaternion.identity, transform);
             jointObj.name = $"Joint_{i}";
             jointObj.transform.localScale = Vector3.one * (legEndSize * 0.5f);
             
@@ -411,7 +422,7 @@ public class CircleLizard : MonoBehaviour
     {
         for (int i = 0; i < joints.Count; i++)
         {
-            GameObject segment = Instantiate(segmentPrefab, joints[i], Quaternion.identity, transform);
+            GameObject segment = Instantiate(bodySegmentPrefab, joints[i], Quaternion.identity, transform);
             segment.name = $"Segment_{segmentsList.Count}_{i}";
             
             float t = i / (float)(joints.Count - 1);
@@ -432,7 +443,7 @@ public class CircleLizard : MonoBehaviour
     {
         if (joints.Count > 0)
         {
-            GameObject segment = Instantiate(segmentPrefab, joints[0], Quaternion.identity, transform);
+            GameObject segment = Instantiate(footSegmentPrefab, joints[0], Quaternion.identity, transform);
             segment.name = $"Foot_{segmentsList.Count}";
             
             segment.transform.localScale = new Vector3(size, size, 1f);
